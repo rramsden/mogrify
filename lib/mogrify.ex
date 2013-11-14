@@ -13,6 +13,8 @@ defmodule Mogrify do
     [name, ext] = String.split(Path.basename(path), ".")
 
     tmp_file = Path.join(tmp_dir, "#{name}_#{random}.#{ext}")
+    :ok = File.cp path, tmp_file
+
     Image.new(path: tmp_file)
   end
 
