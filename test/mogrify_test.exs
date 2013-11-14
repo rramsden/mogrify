@@ -4,7 +4,9 @@ defmodule MogrifyTest do
   test "resizes an image" do
     source = Path.join(fixture_dir, "image.png")
     image = Mogrify.new(source)
-    Mogrify.resize(image, "50x50")
+    image = Mogrify.resize(image, "50x50")
+
+    assert is_record(image, Mogrify.Image)
   end
 
   test "copies image when using open/1" do

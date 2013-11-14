@@ -35,6 +35,7 @@ defmodule Mogrify do
   """
   def resize(image, opts) when is_record(image, Image) do
     System.cmd "mogrify -resize #{opts} #{image.path}"
+    image
   end
 
   defp random(seed // :erlang.now) do
