@@ -1,5 +1,5 @@
 defmodule Mogrify do
-  defrecord Image, path: nil
+  defrecord Image, path: nil, ext: nil
 
   @doc """
   Copy the original image for image modification
@@ -8,21 +8,23 @@ defmodule Mogrify do
 
       iex> Mogrify.open("/path/to/image.png")
   """
-  def open(path) do
+  def open(path, ext // nil) do
     tmp_dir = System.tmp_dir
-    [name, ext] = String.split(Path.basename(path), ".")
+    ext = if ext == nil, do: parse_ext(path), else: ext
+    name = Path.basename(path) |> String.replace(%r/\..+$/, "")
 
-    tmp_file = Path.join(tmp_dir, "#{name}_#{random}.#{ext}")
+    tmp_file = Path.join(tmp_dir, "#{name}-#{random}")
     :ok = File.cp path, tmp_file
 
-    Image.new(path: tmp_file)
+    Image.new(path: tmp_file, ext: ext)
   end
 
   @doc """
   Use the working copy of the image for modification
   """
-  def new(path) do
-    Image.new(path: path)
+  def new(path, ext // nil) do
+    ext = if ext == nil, do: parse_ext(path), else: ext
+    Image.new(path: path, ext: ext)
   end
 
   @doc """
@@ -42,5 +44,10 @@ defmodule Mogrify do
     :random.seed(seed)
     {number, _} = Integer.parse("#{:math.pow(2, 32-1)}")
     :random.uniform(number)
+  end
+
+  defp parse_ext(path) do
+    [_, ext] = (Path.basename(path) |> String.split("."))
+    ext
   end
 end
